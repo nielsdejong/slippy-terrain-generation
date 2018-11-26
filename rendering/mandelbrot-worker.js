@@ -1,54 +1,36 @@
+
 onmessage = function(e) {
+    importScripts( 'perlin/perlin.js');
+    noise.seed(2);
+    var tileCount = 1 << e.data.zoom;
+    var yMin = e.data.row / tileCount;
+    var yMax = (e.data.row + 1) / tileCount;
+    var xMin = e.data.column / tileCount;
+    var xMax = (e.data.column + 1) / tileCount;
+    var step = (xMax - xMin) / 256.0;
 
-  // following code adapted blindly from
-  // http://blogs.msdn.com/mikeormond/archive/2008/08/22
-  // /deep-zoom-multiscaletilesource-and-the-mandelbrot-set.aspx
-
-  var tileCount = 1 << e.data.zoom;
-
-  var ReStart = -2.0;
-  var ReDiff = 3.0;
-
-  var MinRe = ReStart + ReDiff * e.data.column / tileCount;
-  var MaxRe = MinRe + ReDiff / tileCount;
-
-  var ImStart = -1.2;
-  var ImDiff = 2.4;
-
-  var MinIm = ImStart + ImDiff * e.data.row / tileCount;
-  var MaxIm = MinIm + ImDiff / tileCount;
-
-  var Re_factor = (MaxRe - MinRe) / (e.data.size.x - 1);
-  var Im_factor = (MaxIm - MinIm) / (e.data.size.y - 1);
-
-  var MaxIterations = 32;
-
-  var data = e.data.data = [];
-
-  for (var y = 0, i = 0; y < e.data.size.y; ++y) {
-    var c_im = MinIm + y * Im_factor;
-    for (var x = 0; x < e.data.size.x; ++x) {
-      var c_re = MinRe + x * Re_factor;
-      var Z_re = c_re;
-      var Z_im = c_im;
-      var isInside = true;
-      var n = 0;
-      for (n = 0; n < MaxIterations; ++n) {
-        var Z_re2 = Z_re * Z_re;
-        var Z_im2 = Z_im * Z_im;
-        if (Z_re2 + Z_im2 > 4) {
-          isInside = false;
-          break;
+     var data = e.data.data = [];
+      for (var y = 0, i = 0; y < e.data.size.y; y++) {
+        for (var x = 0; x < e.data.size.x; x++) {
+            var value = doNoise(x,y, xMin, yMin, step, e.data.zoom + 8);
+             data[i++] = 256 * (value + 1) / 2.0;
+             data[i++] = 256 * (value + 1) / 2.0;
+             data[i++] = 256 * (value + 1) / 2.0;
+             data[i++] = 255;
+            // data[i++] = (yMin + y * step) * 256.0 + Math.random() * 45;
+            // data[i++] = (xMin + x * step) * 256.0 + Math.random() * 45;
+            // data[i++] = 0;
+            // data[i++] = 255;
         }
-        Z_im = 2 * Z_re * Z_im + c_im;
-        Z_re = Z_re2 - Z_im2 + c_re;
       }
-        data[i++] = x;
-        data[i++] = e.data.row * 255;
-        data[i++] = 128;
-      data[i++] = 255;
-    }
-  }
 
   postMessage(e.data);
 };
+
+function doNoise(x, y, xMin, yMin, step, maxIterations) {
+    var value = 0;
+    for ( var i = 1; i <= maxIterations; i+=2 ){
+        value += noise.simplex2(Math.pow(2, i) *(yMin + y * step), Math.pow(2, i) *(xMin + x * step)) / i;
+    }
+    return value;
+}

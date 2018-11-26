@@ -8,6 +8,7 @@ var map = po.map()
     .add(po.interact())
     .add(po.hash());
 
+
 map.add(po.procedural()
     .worker("mandelbrot-worker.js"));
 
