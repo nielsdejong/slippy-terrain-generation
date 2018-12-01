@@ -7,7 +7,7 @@ var map = po.map()
     .container(document.getElementById("map").appendChild(po.svg("svg")))
     .zoomRange([0, 20])
     .zoom(1)
-    .center({lat: 0.5, lon: 0.5})
+    .center({lat: -0.5, lon: 0.5})
     .add(po.interact())
     .add(po.hash()
 
@@ -15,7 +15,7 @@ var map = po.map()
 
 
 map.add(po.procedural()
-    .worker("mandelbrot-worker.js")
+    .worker("terrain-worker.js")
 );
 
 map.add(po.compass()
@@ -57,7 +57,7 @@ function load(e) {
     //             point.setAttribute("width", 0.0125 * bigness);
     //             point.setAttribute("x", Math.random() * 255);
     //             point.setAttribute("y", Math.random() * 255);
-    //             point.setAttribute("height", 0.0125 *bigness);
+    //             point.setAttribute("height", 0.012g5 *bigness);
     //             //var url = "https://images.vexels.com/media/users/3/127601/isolated/lists/4874bc2389e71df4c479ad933b12226a-elliptical-tree-icon.png";
     //             //var url = "https://cdn0.iconfinder.com/data/icons/simple-flat-colored-trees/100/Tree_green_circle_branches-512.png";
     //             var url = "https://cdn0.iconfinder.com/data/icons/pixelo/32/tree.png";
